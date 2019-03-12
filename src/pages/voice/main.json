@@ -1,0 +1,6 @@
+{
+    "usingComponents": {
+        "van-toast": "/static/vant/toast/index"
+    },
+    "navigationBarTitleText": "音频"
+}

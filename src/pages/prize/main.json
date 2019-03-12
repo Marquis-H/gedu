@@ -1,0 +1,7 @@
+{
+    "usingComponents": {
+        "van-row": "/static/vant/row/index",
+        "van-col": "/static/vant/col/index"
+    },
+    "navigationBarTitleText": "积分商城"
+}

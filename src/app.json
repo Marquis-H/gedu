@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/index/main",
+    "pages/word/main",
+    "pages/voice/main",
+    "pages/me/main",
+    "pages/bind/main",
+    "pages/profile/main",
+    "pages/share/main",
+    "pages/prize/main",
+    "pages/content/main",
+    "pages/wordLearn/main"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#6416a6",
+    "navigationBarTitleText": "主页",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f8f8f8"
+  },
+  "tabBar": {
+    "selectedColor": "#6416a6",
+    "backgroundColor": "#ffffff",
+    "color": "#959595",
+    "list": [
+      {
+        "pagePath": "pages/index/main",
+        "text": "首页",
+        "iconPath": "/static/images/home.png",
+        "selectedIconPath": "/static/images/home-s.png"
+      },
+      {
+        "pagePath": "pages/word/main",
+        "text": "单词",
+        "iconPath": "/static/images/word.png",
+        "selectedIconPath": "/static/images/word-s.png"
+      },
+      {
+        "pagePath": "pages/voice/main",
+        "text": "音频",
+        "iconPath": "/static/images/customerservice.png",
+        "selectedIconPath": "/static/images/customerservice-s.png"
+      },
+      {
+        "pagePath": "pages/me/main",
+        "text": "我的",
+        "iconPath": "/static/images/user.png",
+        "selectedIconPath": "/static/images/user-s.png"
+      }
+    ]
+  }
+}
