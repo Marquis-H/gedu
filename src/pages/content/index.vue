@@ -84,7 +84,6 @@ export default {
   margin-top: 5px;
   padding: 10px 15px 15px 15px;
   background-color: #ffffff;
-  height: 100vh;
 }
 .title {
   color: 101010;
@@ -105,11 +104,9 @@ export default {
   margin: 5px 0;
 }
 .map {
-  height: 5vh;
-  padding: 10px 20px;
+  padding: 15px 0;
 }
 .map img {
   width: 100%;
-  height: 25vh;
 }
 </style>

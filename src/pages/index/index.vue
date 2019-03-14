@@ -68,9 +68,11 @@ export default {
   },
   onShow() {
     var that = this;
+    var openId = wx.getStorageSync(OPEN_ID);
     // 获取banner
     callApi(GET_BANNER, "GET", {
-      type: 'home'
+      type: 'home',
+      openId: openId
     }, res => {
       this.banner.url = res.data;
     });

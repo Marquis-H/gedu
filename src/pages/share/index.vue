@@ -36,6 +36,7 @@ export default {
   data() {
     return {
       banner: "http://iph.href.lu/375x480",
+      shareBanner: "http://iph.href.lu/150x120",
       isBind: true,
       code: ""
     };
@@ -64,22 +65,36 @@ export default {
   onReady() {
     wx.hideShareMenu(); // 隐藏分享按钮
     var that = this;
+    var openId = wx.getStorageSync(OPEN_ID);
     // 获取banner
     callApi(
       GET_BANNER,
       "GET",
       {
-        type: "share"
+        type: "share",
+        openId: openId
       },
       res => {
         this.banner = res.data[0] ? res.data[0] : "http://iph.href.lu/375x480";
       }
     );
+    // 获取share banner
+    callApi(
+      GET_BANNER,
+      "GET",
+      {
+        type: "share_m",
+      },
+      res => {
+        this.shareBanner = res.data[0] ? res.data[0] : "http://iph.href.lu/375x480";
+      }
+    );
   },
   onShareAppMessage(res) {
     return {
-      title: '分享获取积分',
-      path: "/pages/share/main?code=" + this.code
+      title: '单词学习利器',
+      path: "/pages/share/main?code=" + this.code,
+      imageUrl: this.shareBanner
     };
   },
   methods: {
