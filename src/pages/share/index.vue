@@ -84,6 +84,7 @@ export default {
       "GET",
       {
         type: "share_m",
+        openId: openId
       },
       res => {
         this.shareBanner = res.data[0] ? res.data[0] : "http://iph.href.lu/375x480";
