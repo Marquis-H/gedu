@@ -58,6 +58,19 @@ export default {
       res => {
         this.code = res.data.code;
         this.isBind = res.data.isBind;
+        // 获取banner
+        callApi(
+          GET_BANNER,
+          "GET",
+          {
+            type: "share",
+            openId: openId,
+            code: this.code
+          },
+          res => {
+            this.banner = res.data[0] ? res.data[0] : "http://iph.href.lu/375x480";
+          }
+        );
         Toast.clear();
       }
     );
@@ -66,18 +79,6 @@ export default {
     wx.hideShareMenu(); // 隐藏分享按钮
     var that = this;
     var openId = wx.getStorageSync(OPEN_ID);
-    // 获取banner
-    callApi(
-      GET_BANNER,
-      "GET",
-      {
-        type: "share",
-        openId: openId
-      },
-      res => {
-        this.banner = res.data[0] ? res.data[0] : "http://iph.href.lu/375x480";
-      }
-    );
     // 获取share banner
     callApi(
       GET_BANNER,
