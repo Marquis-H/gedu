@@ -1,9 +1,9 @@
 <template>
   <div class="container">
     <div class="top">
-      <!-- <div class="back" @click="backHome()">
+      <div class="back" :style="'padding-top:'+statusBarHeight+'px'" @click="backHome()">
         <van-icon name="home-o" size="25px" color="#fff"/>
-      </div> -->
+      </div>
       <img :src="banner" class="banner">
     </div>
     <div class="content" v-if="isBind">
@@ -38,10 +38,17 @@ export default {
       banner: "http://iph.href.lu/375x480",
       shareBanner: "http://iph.href.lu/150x120",
       isBind: true,
-      code: ""
+      code: "",
+      statusBarHeight: 20
     };
   },
   onLoad(options) {
+    var that = this;
+    wx.getSystemInfo({
+      success(res) {
+        that.statusBarHeight = res.statusBarHeight + 10;
+      }
+    });
     // 分享数据
     const code = options.code;
     const openId = wx.getStorageSync(OPEN_ID);
@@ -152,12 +159,11 @@ export default {
   margin-top: -2px;
 }
 .back {
-  width: 25px;
-  position: absolute;
-  top: 18px;
-  margin-top: 4rpx;
-  padding: 10rpx;
-  left: 5vw;
+  box-sizing: border-box;
   display: flex;
+  position: fixed;
+  z-index: 5000;
+  top: 0;
+  left: 20px;
 }
 </style>
