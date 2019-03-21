@@ -8,21 +8,24 @@
     </div>
     <div class="info">
       <div class="title">校区信息</div>
-      <div class="item">
-        <van-icon name="home-o" size="20px" color="#6416a6"/>
-        <span>{{detail.title}}</span>
-      </div>
-      <div class="item">
-        <van-icon name="phone-circle-o" size="20px" color="#6416a6"/>
-        <span>{{detail.phone}}</span>
-      </div>
-      <div class="item">
-        <div>
-          <van-icon name="location-o" size="20px" color="#6416a6"/>
-          <span>{{detail.address}}</span>
+      <div v-for="(item, i) in detail.extra" :key="i">
+        <div v-if="i > 0" class="hr"></div>
+        <div class="item">
+          <van-icon name="home-o" size="20px" color="#6416a6"/>
+          <span>{{item.title}}</span>
         </div>
-        <div class="map">
-          <img :src="detail.map">
+        <div class="item">
+          <van-icon name="phone-circle-o" size="20px" color="#6416a6"/>
+          <span>{{item.phone}}</span>
+        </div>
+        <div class="item">
+          <div>
+            <van-icon name="location-o" size="20px" color="#6416a6"/>
+            <span>{{item.address}}</span>
+          </div>
+          <div class="map" v-if="item.map">
+            <img :src="item.map">
+          </div>
         </div>
       </div>
     </div>
@@ -108,5 +111,8 @@ export default {
 }
 .map img {
   width: 100%;
+}
+.hr{
+  border-bottom: 1px solid #ddd
 }
 </style>
