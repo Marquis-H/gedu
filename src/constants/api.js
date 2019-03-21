@@ -21,6 +21,8 @@ export const GET_CONTENT_CAT = `${domain}/api/app/public/content_cat`;
 export const GET_CONTENT_LIST = `${domain}/api/app/public/content/list`;
 // 获取内容
 export const GET_CONTENT_DETAIL = `${domain}/api/app/public/content/detail`;
+// 获取活动规则
+export const GET_SHARE_TIPS = `${domain}/api/app/public/share/tips`;
 
 // 获取单词统计数据
 export const WORD_INFO = `${domain}/api/app/word/info`;

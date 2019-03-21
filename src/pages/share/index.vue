@@ -11,7 +11,7 @@
       <van-button round type="danger" class="btn" open-type="share">邀请好友</van-button>
       <p class="tips">
         <van-icon name="question-o"/>
-        <span>活动规则</span>
+        <span @click="tips">活动规则</span>
       </p>
     </div>
     <div class="content" v-else>
@@ -23,14 +23,16 @@
       </div>
     </div>
     <van-toast id="van-toast"/>
+    <van-dialog id="van-dialog"/>
   </div>
 </template>
 
 <script>
-import { GET_BANNER, UPDATE_INTEGRAL_SHARE } from "../../constants/api.js";
+import { GET_BANNER, UPDATE_INTEGRAL_SHARE, GET_SHARE_TIPS } from "../../constants/api.js";
 import { callApi } from "../../libs/api.js";
 import { OPEN_ID } from "../../constants/storage.js";
 import Toast from "../../../static/vant/toast/toast";
+import Dialog from "../../../static/vant/dialog/dialog";
 
 export default {
   data() {
@@ -39,7 +41,8 @@ export default {
       shareBanner: "http://iph.href.lu/150x120",
       isBind: true,
       code: "",
-      statusBarHeight: 20
+      statusBarHeight: 20,
+      shareTips: ''
     };
   },
   onLoad(options) {
@@ -75,7 +78,15 @@ export default {
             code: this.code
           },
           res => {
-            this.banner = res.data[0] ? res.data[0] : "http://iph.href.lu/375x480";
+            this.banner = res.data[0]?res.data[0]:"http://iph.href.lu/375x480";
+          }
+        );
+        callApi(
+          GET_SHARE_TIPS,
+          "GET",
+          {},
+          res => {
+            this.shareTips = res.data.tips;
           }
         );
         Toast.clear();
@@ -101,7 +112,7 @@ export default {
   },
   onShareAppMessage(res) {
     return {
-      title: '单词学习利器',
+      title: "雅思分手神器",
       path: "/pages/share/main?code=" + this.code,
       imageUrl: this.shareBanner
     };
@@ -115,6 +126,14 @@ export default {
     toBind() {
       wx.reLaunch({
         url: "/pages/bind/main?code=" + this.code
+      });
+    },
+    tips() {
+      Dialog.alert({
+        title: "活动规则",
+        message: this.shareTips
+      }).then(() => {
+        // on close
       });
     }
   },
