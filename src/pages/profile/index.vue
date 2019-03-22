@@ -60,7 +60,7 @@ export default {
         case "birthday":
           this.showBirthday = true;
           this.birthday = this.profile.birthday
-            ? new Date(this.profile.birthday + " 00:00:00").getTime()
+            ? new Date((this.profile.birthday + " 01:00:00").replace(/-/g, '/')).getTime()
             : new Date().getTime();
           break;
       }
@@ -110,21 +110,27 @@ export default {
     },
     confirmBirthday() {
       var date = new Date(this.birthday);
-
       var year = date.getFullYear();
       var month = date.getMonth() + 1;
       var day = date.getDate();
+
       callApi(
         UPDATE_PROFILE,
         "post",
-        { type: "birthday", birthday: year+'-'+month+'-'+day },
+        { type: "birthday", birthday: year + "-" + this.addZero(month) + "-" + this.addZero(day) },
         res => {
           if (res.code == 0) {
-            this.profile.birthday = year+'-'+month+'-'+day;
-            this.showBirthday = false
+            this.profile.birthday = year + "-" + this.addZero(month) + "-" + this.addZero(day);
+            this.showBirthday = false;
           }
         }
       );
+    },
+    addZero(i) {
+      if (i < 10) {
+        i = "0" + i;
+      }
+      return i;
     }
   },
   onReady() {
