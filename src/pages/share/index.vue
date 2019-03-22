@@ -131,7 +131,8 @@ export default {
     tips() {
       Dialog.alert({
         title: "活动规则",
-        message: this.shareTips
+        message: this.shareTips,
+        messageAlign: 'left'
       }).then(() => {
         // on close
       });
