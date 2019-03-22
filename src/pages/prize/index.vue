@@ -32,6 +32,7 @@
 <script>
 import { GET_PRIZE_LIST, GET_PROFILE } from "../../constants/api.js";
 import { callApi } from "../../libs/api.js";
+import { OPEN_ID } from "../../constants/storage.js";
 
 export default {
   data() {
@@ -47,12 +48,15 @@ export default {
   },
   methods: {},
   onReady() {
+    var openId = wx.getStorageSync(OPEN_ID);
     // 获取个人信息
     callApi(GET_PROFILE, "get", {}, res => {
       this.profile = res.data;
     });
     // 获取prize list
-    callApi(GET_PRIZE_LIST, "get", {}, res => {
+    callApi(GET_PRIZE_LIST, "get", {
+      openId: openId
+    }, res => {
       this.prize = res.data;
     });
   },
