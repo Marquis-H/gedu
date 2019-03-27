@@ -61,17 +61,32 @@
               <p class="label">邀请有奖</p>
             </div>
           </van-col>
-          <van-col span="6"></van-col>
+          <van-col span="6">
+            <div class="item" @click="showWordType = true" v-if="wordType">
+              <van-icon name="notes-o" size="40px" color="#6416a6"/>
+              <p class="label">单词类别</p>
+            </div>
+          </van-col>
         </van-row>
       </div>
     </div>
     <van-toast id="van-toast"/>
+    <van-dialog use-slot :closeOnClickOverlay="true" :show="showWordType == true" @confirm="confirmType()">
+      <van-radio-group :value="wordType" @change="onChange">
+        <van-radio name="ielts">雅思</van-radio>
+        <van-radio name="toefl">托福</van-radio>
+        <van-radio name="four">四级</van-radio>
+        <van-radio name="six">六级</van-radio>
+        <van-radio name="gre">GRE</van-radio>
+        <van-radio name="gmat">GMAT</van-radio>
+      </van-radio-group>
+    </van-dialog>
   </div>
 </template>
 
 <script>
 import Toast from "../../../static/vant/toast/toast";
-import { GET_PROFILE } from "../../constants/api.js";
+import { GET_PROFILE, UPDATE_PROFILE } from "../../constants/api.js";
 import { callApi } from "../../libs/api.js";
 
 export default {
@@ -85,7 +100,9 @@ export default {
           daka: "-",
           word: "-"
         }
-      }
+      },
+      wordType: "",
+      showWordType: false
     };
   },
   methods: {
@@ -106,19 +123,38 @@ export default {
       wx.navigateTo({
         url: "/pages/prize/main"
       });
+    },
+    onChange(event) {
+      this.wordType = event.mp.detail;
+    },
+    confirmType() {
+      var wordType = this.wordType;
+      // 保存用户选择的单词类别
+      callApi(
+        UPDATE_PROFILE,
+        "POST",
+        { type: "wordType", wordType: wordType },
+        res => {
+          Toast(res.message);
+        },
+        error => {
+          Toast(res.message);
+        }
+      );
     }
   },
   onShow() {
     // 获取个人信息
     callApi(GET_PROFILE, "GET", {}, res => {
       this.profile = res.data;
+      this.wordType = res.data.wordType;
     });
   },
   created() {}
 };
 </script>
 
-<style scoped>
+<style>
 .header {
   height: 28vh;
 }
@@ -176,5 +212,8 @@ export default {
 .service .item .label {
   font-size: 14px;
   color: #455a64;
+}
+.van-radio {
+  margin: 8px;
 }
 </style>

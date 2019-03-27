@@ -80,6 +80,28 @@
     <div class="daka" v-else>
       <van-button size="normal" disabled>今日已打卡</van-button>
     </div>
+    <van-dialog
+      use-slot
+      async-close
+      :show="showShare"
+      @confirm="onConfirm"
+      :closeOnClickOverlay="true"
+      confirmButtonText="保存相册"
+      style="width:auto"
+    >
+      <div style="width: 349.5px; z-index:-1">
+        <canvas style="width: 350px; height: 420px;" canvas-id="shareImg"></canvas>
+      </div>
+    </van-dialog>
+    <van-dialog
+      use-slot
+      async-close
+      confirm-button-open-type="openSetting"
+      :show="showSetting"
+      @opensetting="openSetting"
+      confirmButtonText="请打开设定，开启相册存取权限"
+    ></van-dialog>
+    <van-toast id="van-toast"/>
   </div>
 </template>
 
@@ -110,7 +132,10 @@ export default {
         translation: "-",
         annotation: "-",
         exchanges: "-"
-      }
+      },
+      showShare: false,
+      shareImg: "",
+      showSetting: false
     };
   },
   methods: {
@@ -185,14 +210,101 @@ export default {
       // 打卡
       callApi(WORD_DAKA, "post", {}, res => {
         this.isComplete = res.data.isComplete;
+        // 返回背景图、用户昵称和头像,天数
+        this.savePoster(res.data.shareData);
       });
+    },
+    // 绘制图片
+    savePoster(data) {
+      var that = this;
+      Toast.loading({
+        mask: true,
+        message: "加载中..."
+      });
+      that.showShare = true;
+
+      var canvas = wx.createCanvasContext("shareImg");
+      canvas.drawImage("/static/images/share.jpeg", 0, 0, 350, 420);
+
+      canvas.setFontSize(23);
+      canvas.setFillStyle("#424E75");
+      canvas.setStrokeStyle("#424E75");
+      if (String(data.day).length == 1) {
+        canvas.fillText(data.day, 203, 190);
+      } else {
+        canvas.fillText(data.day, 196, 190);
+      }
+      canvas.setFontSize(21);
+      canvas.fillText(data.word, 190, 362);
+      canvas.draw();
+
+      setTimeout(function() {
+        wx.canvasToTempFilePath({
+          x: 0,
+          y: 0,
+          width: 350,
+          height: 420,
+          destWidth: 350,
+          destHeight: 420,
+          canvasId: "shareImg",
+          success: function(res) {
+            that.shareImg = res.tempFilePath;
+            Toast.clear();
+          },
+          fail: function(res) {
+            console.log(res);
+          }
+        });
+      }, 500);
+    },
+    onConfirm() {
+      Toast.loading({
+        mask: true,
+        message: "加载中..."
+      });
+      // 下载图片
+      var that = this;
+      //将图片保存到相册
+      wx.saveImageToPhotosAlbum({
+        filePath: that.shareImg,
+        success(res) {
+          that.showShare = false;
+          Toast("图片成功保存到相册了，快去分享朋友圈吧");
+        },
+        fail: function(res) {
+          Toast.clear();
+          wx.authorize({
+            scope: "scope.writePhotosAlbum",
+            success(res) {
+              console.log(res);
+              that.onConfirm();
+            },
+            fail(res) {
+              that.showShare = false;
+              that.showSetting = true;
+            }
+          });
+        }
+      });
+    },
+    openSetting(res) {
+      this.showSetting = false;
+      if (res.mp.detail.authSetting["scope.writePhotosAlbum"] == true) {
+        this.onConfirm();
+      } else {
+        Toast("未开启访问相册权限，图片未能成功保存到相册");
+      }
     }
   },
   onReady: function() {
     this.index = 0;
     this.getWordInfo();
   },
-  created() {}
+  created() {},
+  onUnload() {
+    this.showShare = false;
+    this.showSetting = false;
+  }
 };
 </script>
 
@@ -287,5 +399,9 @@ export default {
 .daka {
   text-align: center;
   padding-top: 48vh;
+}
+.van-popup {
+  width: auto !important;
+  min-width: 85% !important;
 }
 </style>

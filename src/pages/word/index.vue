@@ -42,6 +42,10 @@
       <van-radio-group :value="type" @change="onChange">
         <van-radio name="ielts">雅思</van-radio>
         <van-radio name="toefl">托福</van-radio>
+        <van-radio name="four">四级</van-radio>
+        <van-radio name="six">六级</van-radio>
+        <van-radio name="gre">GRE</van-radio>
+        <van-radio name="gmat">GMAT</van-radio>
       </van-radio-group>
     </van-dialog>
   </div>
@@ -62,7 +66,8 @@ export default {
         meWord: "-"
       },
       isRecord: true,
-      type: "ielts"
+      type: "ielts",
+      currentType: null
     };
   },
   methods: {
@@ -77,6 +82,12 @@ export default {
         // 判断是否有选择单词类型
         this.isRecord = res.data.isRecord;
         this.info = res.data.info;
+        this.currentType = res.data.wordType;
+        if (this.currentType) {
+          wx.setNavigationBarTitle({
+            title: "单词 - " + this.currentType
+          });
+        }
       });
     },
     toLearn() {

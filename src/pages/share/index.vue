@@ -2,7 +2,7 @@
   <div class="container">
     <div class="top">
       <div class="back" :style="'padding-top:'+statusBarHeight+'px'" @click="backHome()">
-        <van-icon name="home-o" size="25px" color="#fff"/>
+        <van-icon name="home-o" size="25px" color="#455a64"/> <span style="font-size: 16px;line-height: 1.9;">首页</span>
       </div>
       <img :src="banner" class="banner">
     </div>
@@ -185,5 +185,6 @@ export default {
   z-index: 5000;
   top: 0;
   left: 20px;
+  color: #455a64;
 }
 </style>
