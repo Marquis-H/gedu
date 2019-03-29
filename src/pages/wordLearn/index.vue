@@ -3,7 +3,7 @@
     <scroll-view scroll-y style="height: 88vh;">
       <div class="content">
         <div class="slider">
-          <van-slider :value="info.currentValue" use-button-slot disabled>
+          <van-slider :value="info.currentValue*2" use-button-slot disabled :step="2">
             <view class="custom-button" slot="button">{{ info.currentValue }}</view>
           </van-slider>
         </div>
@@ -244,8 +244,8 @@ export default {
           y: 0,
           width: 350,
           height: 420,
-          destWidth: 350,
-          destHeight: 420,
+          destWidth: 350 * 750 / wx.getSystemInfoSync().windowWidth,
+          destHeight: 420 * 750 / wx.getSystemInfoSync().windowWidth,
           canvasId: "shareImg",
           success: function(res) {
             that.shareImg = res.tempFilePath;

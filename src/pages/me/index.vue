@@ -71,7 +71,7 @@
       </div>
     </div>
     <van-toast id="van-toast"/>
-    <van-dialog use-slot :closeOnClickOverlay="true" :show="showWordType == true" @confirm="confirmType()">
+    <van-dialog use-slot :closeOnClickOverlay="true" :show="showWordType" @confirm="confirmType()" @close="showWordType = false">
       <van-radio-group :value="wordType" @change="onChange">
         <van-radio name="ielts">雅思</van-radio>
         <van-radio name="toefl">托福</van-radio>
@@ -135,9 +135,11 @@ export default {
         "POST",
         { type: "wordType", wordType: wordType },
         res => {
+          this.showWordType = false;
           Toast(res.message);
         },
         error => {
+          this.showWordType = false;
           Toast(res.message);
         }
       );
