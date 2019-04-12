@@ -1,6 +1,10 @@
 {
     "usingComponents": {
-        "van-toast": "/static/vant/toast/index"
+        "van-tab": "/static/vant/tab/index",
+        "van-tabs": "/static/vant/tabs/index",
+        "van-toast": "/static/vant/toast/index",
+        "van-cell": "/static/vant/cell/index",
+        "van-cell-group": "/static/vant/cell-group/index"
     },
     "navigationBarTitleText": "音频"
 }

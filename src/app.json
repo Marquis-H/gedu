@@ -9,7 +9,8 @@
     "pages/share/main",
     "pages/prize/main",
     "pages/content/main",
-    "pages/wordLearn/main"
+    "pages/wordLearn/main",
+    "pages/voiceLearn/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
