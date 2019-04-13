@@ -31,14 +31,15 @@
     </div>
     <div class="foot">
       <div class="slider">
-        <van-slider :value="2"/>
+        <van-slider :value="sliderVal" @change="handleChangeSlider"/>
       </div>
       <van-row class="play">
         <van-col span="6" offset="3">
           <van-icon name="arrow-left" size="5vh"/>
         </van-col>
         <van-col span="6">
-          <van-icon name="play" size="5vh"/>
+          <van-icon name="play" size="5vh" v-if="isPlaying == false" @click="handlePlay"/>
+          <van-icon name="pause" size="5vh" v-else @click="handlePlay"/>
         </van-col>
         <van-col span="6">
           <van-icon name="arrow" size="5vh"/>
@@ -55,6 +56,9 @@ export default {
     return {
       hiddenAll: false,
       hiddenCn: true,
+      isPlaying: false,
+      sliderVal: 0,
+      duration: 0,
       voiceItem: {
         title: "Test 1 - Section 1",
         voice:
@@ -72,14 +76,60 @@ export default {
   },
   onLoad: function(options) {
     var id = options.id;
+    //获取播放器
+    this.audioCtx = wx.createInnerAudioContext("musicAudio");
+    // 获取数据
+    this.getVoiceItem();
   },
   methods: {
-    getVoiceItem(id) {},
+    getVoiceItem(id) {
+      this.audioCtx.src = this.voiceItem.voice;
+      this.playSet();
+    },
     handleHiddenCn() {
       this.hiddenCn = !this.hiddenCn;
     },
     handleHiddenAll() {
       this.hiddenAll = !this.hiddenAll;
+    },
+    handlePlay() {
+      if (this.isPlaying) {
+        this.audioCtx.play();
+        this.audioCtx.onTimeUpdate(() => this.timeUpdate);
+      } else {
+        this.audioCtx.pause();
+      }
+      // 改变图标
+      this.isPlaying = !this.isPlaying;
+    },
+    playSet() {
+      var that = this;
+      wx.showToast({ title: "加载音频", icon: "loading", duration: 500 });
+      this.audioCtx.seek(0);
+      this.audioCtx.pause();
+      this.isPlaying = true;
+      var timer = setTimeout(function() {
+        that.audioCtx.play();
+        that.audioCtx.onTimeUpdate(that.timeUpdate);
+        that.isPlaying = false;
+      }, 500);
+    },
+    handleChangeSlider(e) {
+      var unit = this.duration / 100;
+      var seek = e.mp.detail * unit;
+      if(this.isPlaying){
+        this.handlePlay()
+      }
+      this.audioCtx.seek(seek);
+      this.sliderVal = e.mp.detail;
+    },
+    timeUpdate() {
+      var e = this.audioCtx;
+      var duration = e.duration;
+      var currentTime = e.currentTime;
+      var sliderVal = currentTime / (duration / 100);
+      this.sliderVal = sliderVal;
+      this.duration = duration;
     }
   }
 };
