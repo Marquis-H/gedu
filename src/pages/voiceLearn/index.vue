@@ -43,13 +43,15 @@
           <van-icon name="arrow-left" size="5vh" @click="handlePre"/>
         </van-col>
         <van-col span="6">
-          <van-icon name="play" size="5vh" v-if="isPlaying == false" @click="handlePlay"/>
-          <van-icon name="pause" size="5vh" v-else @click="handlePlay"/>
+          <van-icon name="pause" size="5vh" v-if="isPlaying == false" @click="handlePlay"/>
+          <van-icon name="play" size="5vh" v-else @click="handlePlay"/>
         </van-col>
         <van-col span="6">
           <van-icon name="arrow" size="5vh" @click="handleNext"/>
         </van-col>
-        <van-col span="3"></van-col>
+        <van-col span="3">
+          <span class="time">{{currentTime}}</span>
+        </van-col>
       </van-row>
     </div>
     <van-toast id="van-toast"/>
@@ -64,11 +66,12 @@ import { VOICE_DETAIL } from "../../constants/api";
 export default {
   data() {
     return {
-      hiddenAll: false,
+      hiddenAll: true,
       hiddenCn: true,
       isPlaying: false,
       sliderVal: 0,
       duration: 0,
+      currentTime: 0,
       toView: -1,
       voiceItem: {},
       audioCtx: {}
@@ -146,6 +149,7 @@ export default {
       var sliderVal = currentTime / (duration / 100);
       this.sliderVal = sliderVal;
       this.duration = duration;
+      this.currentTime = this.timeToMinute(duration - currentTime);
 
       const translation = this.voiceItem.translation;
       // 匹配歌词
@@ -184,6 +188,34 @@ export default {
       } else {
         Toast("无音频可播放");
       }
+    },
+    timeToMinute(times) {
+      var result = "00:00:00";
+      var hour, minute, second;
+      if (times > 0) {
+        hour = Math.floor(times / 3600);
+        if (hour < 10) {
+          hour = "0" + hour;
+        }
+        minute = Math.floor((times - 3600 * hour) / 60);
+        if (minute < 10) {
+          minute = "0" + minute;
+        }
+
+        second = Math.floor((times - 3600 * hour - 60 * minute) % 60);
+        if (second < 10) {
+          second = "0" + second;
+        }
+        if (hour == "00") {
+          result = minute + ":" + second;
+        } else if (minute == "00") {
+          result = hour + ":" + minute + ":" + second;
+        } else {
+          result = second;
+        }
+      }
+      console.log("result", result);
+      return result;
     }
   }
 };
@@ -227,5 +259,10 @@ export default {
 }
 .slider {
   padding: 0 15px;
+}
+.time{
+  text-align: left;
+  margin-right: 15px;
+  font-size: 14px;
 }
 </style>
