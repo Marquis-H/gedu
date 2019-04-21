@@ -18,7 +18,12 @@
     </div>
     <scroll-view scroll-y style="height: 80vh;" class="content" v-if="hiddenAll == false">
       <div class="section">
-        <div v-for="(item, index) in voiceItem.translation" class="duan" :key="index" :style="'color:'+(toView == index?'#6416a6':'#455a64')">
+        <div
+          v-for="(item, index) in voiceItem.translation"
+          class="duan"
+          :key="index"
+          :style="'color:'+(toView == index?'#6416a6':'#455a64')"
+        >
           <p>{{item.entext}}</p>
           <p :style="'display:'+(hiddenCn?'none':'block')">{{item.cntext}}</p>
         </div>
@@ -65,7 +70,8 @@ export default {
       sliderVal: 0,
       duration: 0,
       toView: -1,
-      voiceItem: {}
+      voiceItem: {},
+      audioCtx: {}
     };
   },
   onLoad: function(options) {
@@ -88,8 +94,7 @@ export default {
       callApi(VOICE_DETAIL, "GET", { id: id }, res => {
         Toast.clear();
         this.voiceItem = res.data;
-
-        this.audioCtx.src = this.voiceItem.voice;
+        this.audioCtx.src = encodeURI(this.voiceItem.voice);
         this.playSet();
       });
     },
@@ -110,14 +115,19 @@ export default {
     },
     playSet() {
       var that = this;
-      wx.showToast({ title: "加载音频", icon: "loading", duration: 500 });
+      Toast.loading({
+        duration: 0,
+        mask: true,
+        message: "加载音频..."
+      });
       this.audioCtx.seek(0);
       this.audioCtx.pause();
       this.isPlaying = true;
-      var timer = setTimeout(function() {
+      setTimeout(function() {
         that.audioCtx.play();
         that.audioCtx.onTimeUpdate(that.timeUpdate);
         that.isPlaying = false;
+        Toast.clear();
       }, 500);
     },
     handleChangeSlider(e) {
@@ -141,8 +151,8 @@ export default {
       // 匹配歌词
       for (var j = 0; j < translation.length; ++j) {
         if (
-          currentTime >= this.voiceItem.translation[j]['start'] &&
-          currentTime < this.voiceItem.translation[j]['end']
+          currentTime >= this.voiceItem.translation[j]["start"] &&
+          currentTime < this.voiceItem.translation[j]["end"]
         ) {
           this.toView = j;
         }
@@ -151,6 +161,7 @@ export default {
     handlePre() {
       if (this.voiceItem.pre) {
         this.audioCtx.destroy();
+        this.resetData();
         wx.redirectTo({
           url: "/pages/voiceLearn/main?id=" + this.voiceItem.pre
         });
@@ -158,9 +169,15 @@ export default {
         Toast("无音频可播放");
       }
     },
+    resetData() {
+      this.sliderVal = 0;
+      this.duration = 0;
+      this.toView = -1;
+    },
     handleNext() {
       if (this.voiceItem.next) {
         this.audioCtx.destroy();
+        this.resetData();
         wx.redirectTo({
           url: "/pages/voiceLearn/main?id=" + this.voiceItem.next
         });
@@ -209,6 +226,6 @@ export default {
   text-align: center;
 }
 .slider {
-  padding: 0 5px;
+  padding: 0 15px;
 }
 </style>
