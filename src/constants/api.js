@@ -35,6 +35,10 @@ export const UPDATE_WORD_RECORD = `${domain}/api/app/word/update_record`;
 // 打卡
 export const WORD_DAKA = `${domain}/api/app/word/daka`;
 
+// 获取音频列表
+export const VOICE_LIST = `${domain}/api/app/voice/list`;
+// 获取音频信息
+export const VOICE_DETAIL = `${domain}/api/app/voice/detail`;
 
 // 获取用户个人信息
 export const GET_PROFILE = `${domain}/api/app/profile/detail`;
