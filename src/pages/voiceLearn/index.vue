@@ -18,9 +18,9 @@
     </div>
     <scroll-view scroll-y style="height: 80vh;" class="content" v-if="hiddenAll == false">
       <div class="section">
-        <div v-for="(item, index) in voiceItem.translation" class="duan" :key="index">
-          <p>{{item.enText}}</p>
-          <p :style="'display:'+(hiddenCn?'none':'block')">{{item.cnText}}</p>
+        <div v-for="(item, index) in voiceItem.translation" class="duan" :key="index" :style="'color:'+(toView == index?'#6416a6':'#455a64')">
+          <p>{{item.entext}}</p>
+          <p :style="'display:'+(hiddenCn?'none':'block')">{{item.cntext}}</p>
         </div>
       </div>
     </scroll-view>
@@ -35,22 +35,27 @@
       </div>
       <van-row class="play">
         <van-col span="6" offset="3">
-          <van-icon name="arrow-left" size="5vh"/>
+          <van-icon name="arrow-left" size="5vh" @click="handlePre"/>
         </van-col>
         <van-col span="6">
           <van-icon name="play" size="5vh" v-if="isPlaying == false" @click="handlePlay"/>
           <van-icon name="pause" size="5vh" v-else @click="handlePlay"/>
         </van-col>
         <van-col span="6">
-          <van-icon name="arrow" size="5vh"/>
+          <van-icon name="arrow" size="5vh" @click="handleNext"/>
         </van-col>
         <van-col span="3"></van-col>
       </van-row>
     </div>
+    <van-toast id="van-toast"/>
   </div>
 </template>
 
 <script>
+import Toast from "../../../static/vant/toast/toast";
+import { callApi } from "../../libs/api.js";
+import { VOICE_DETAIL } from "../../constants/api";
+
 export default {
   data() {
     return {
@@ -59,19 +64,8 @@ export default {
       isPlaying: false,
       sliderVal: 0,
       duration: 0,
-      voiceItem: {
-        title: "Test 1 - Section 1",
-        voice:
-          "http://tiku.d.zhan.com/Ielts_Audio/1475217733_1363_6791/20160930134049_01.Test1.Section1.mp3",
-        translation: [
-          {
-            cnText: "大家好，女士们，先生们。",
-            enText: "Good day, ladies and gentlemen.",
-            star: "57.91",
-            end: "59.49"
-          }
-        ]
-      }
+      toView: -1,
+      voiceItem: {}
     };
   },
   onLoad: function(options) {
@@ -79,12 +73,25 @@ export default {
     //获取播放器
     this.audioCtx = wx.createInnerAudioContext("musicAudio");
     // 获取数据
-    this.getVoiceItem();
+    this.getVoiceItem(id);
+  },
+  onUnload() {
+    this.audioCtx.destroy();
   },
   methods: {
     getVoiceItem(id) {
-      this.audioCtx.src = this.voiceItem.voice;
-      this.playSet();
+      Toast.loading({
+        duration: 0,
+        mask: true,
+        message: "加载中..."
+      });
+      callApi(VOICE_DETAIL, "GET", { id: id }, res => {
+        Toast.clear();
+        this.voiceItem = res.data;
+
+        this.audioCtx.src = this.voiceItem.voice;
+        this.playSet();
+      });
     },
     handleHiddenCn() {
       this.hiddenCn = !this.hiddenCn;
@@ -95,7 +102,6 @@ export default {
     handlePlay() {
       if (this.isPlaying) {
         this.audioCtx.play();
-        this.audioCtx.onTimeUpdate(() => this.timeUpdate);
       } else {
         this.audioCtx.pause();
       }
@@ -117,8 +123,8 @@ export default {
     handleChangeSlider(e) {
       var unit = this.duration / 100;
       var seek = e.mp.detail * unit;
-      if(this.isPlaying){
-        this.handlePlay()
+      if (this.isPlaying) {
+        this.handlePlay();
       }
       this.audioCtx.seek(seek);
       this.sliderVal = e.mp.detail;
@@ -130,6 +136,37 @@ export default {
       var sliderVal = currentTime / (duration / 100);
       this.sliderVal = sliderVal;
       this.duration = duration;
+
+      const translation = this.voiceItem.translation;
+      // 匹配歌词
+      for (var j = 0; j < translation.length; ++j) {
+        if (
+          currentTime >= this.voiceItem.translation[j]['start'] &&
+          currentTime < this.voiceItem.translation[j]['end']
+        ) {
+          this.toView = j;
+        }
+      }
+    },
+    handlePre() {
+      if (this.voiceItem.pre) {
+        this.audioCtx.destroy();
+        wx.redirectTo({
+          url: "/pages/voiceLearn/main?id=" + this.voiceItem.pre
+        });
+      } else {
+        Toast("无音频可播放");
+      }
+    },
+    handleNext() {
+      if (this.voiceItem.next) {
+        this.audioCtx.destroy();
+        wx.redirectTo({
+          url: "/pages/voiceLearn/main?id=" + this.voiceItem.next
+        });
+      } else {
+        Toast("无音频可播放");
+      }
     }
   }
 };
@@ -160,7 +197,7 @@ export default {
 }
 .section p {
   font-size: 16px;
-  color: #455a64;
+  /* color: #455a64; */
 }
 .foot {
   position: absolute;

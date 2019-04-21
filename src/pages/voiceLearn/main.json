@@ -3,7 +3,8 @@
         "van-row": "/static/vant/row/index",
         "van-col": "/static/vant/col/index",
         "van-icon": "/static/vant/icon/index",
-        "van-slider": "/static/vant/slider/index"
+        "van-slider": "/static/vant/slider/index",
+        "van-toast": "/static/vant/toast/index"
     },
     "navigationBarTitleText": "音频"
 }

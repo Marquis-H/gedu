@@ -5,89 +5,56 @@
         <div class="cell" v-for="(item, idx) in tab.data" :key="idx">
           <span>{{item.title}}</span>
           <van-cell-group>
-            <van-cell v-for="(section, i) in item.section" :key="i" :title="section.title" is-link/>
+            <van-cell
+              v-for="(section, i) in item.section"
+              :key="section.id"
+              :title="section.title"
+              is-link
+              :url="'/pages/voiceLearn/main?id='+section.id"
+            />
           </van-cell-group>
         </div>
       </van-tab>
     </van-tabs>
+    <van-toast id="van-toast"/>
   </div>
 </template>
 
 <script>
 import Toast from "../../../static/vant/toast/toast";
+import { callApi } from "../../libs/api.js";
+import { VOICE_LIST } from "../../constants/api";
 
 export default {
   data() {
     return {
       active: 0,
-      tabs: [
-        {
-          id: 1,
-          title: "剑雅13",
-          data: [
-            {
-              title: "Test 1",
-              section: [
-                {
-                  id: 1,
-                  title: "Section 1"
-                },
-                {
-                  id: 2,
-                  title: "Section 2"
-                }
-              ]
-            },
-            {
-              title: "Test 2",
-              section: [
-                {
-                  id: 1,
-                  title: "Section 1"
-                },
-                {
-                  id: 2,
-                  title: "Section 2"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 1,
-          title: "剑雅12",
-          data: [
-            {
-              title: "Test 1",
-              section: [
-                {
-                  id: 1,
-                  title: "Section 1"
-                }
-              ]
-            },
-            {
-              title: "Test 2",
-              section: [
-                {
-                  id: 1,
-                  title: "Section 1"
-                },
-                {
-                  id: 2,
-                  title: "Section 2"
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      tabs: []
     };
   },
   methods: {
-    onChange(event) {}
+    getList() {
+      Toast.loading({
+        duration: 0,
+        mask: true,
+        message: "加载中..."
+      });
+      callApi(VOICE_LIST, "GET", {}, res => {
+        Toast.clear();
+        this.tabs = res.data;
+      });
+    },
+    onChange(event) {},
+    download(url, id) {
+      // 跳转到播放页面
+      wx.navigateTo({
+        url: "/pages/voiceLearn/main?id=" + id
+      });
+    }
   },
-  onShow() {},
+  onShow() {
+    this.getList();
+  },
   created() {}
 };
 </script>
@@ -96,9 +63,9 @@ export default {
 .container {
   vertical-align: middle;
 }
-.cell span{
+.cell span {
   font-size: 14px;
   padding-left: 15px;
-  color: #455a64
+  color: #455a64;
 }
 </style>
