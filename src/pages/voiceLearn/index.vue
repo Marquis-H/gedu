@@ -176,6 +176,7 @@ export default {
     resetData() {
       this.sliderVal = 0;
       this.duration = 0;
+      this.currentTime = 0;
       this.toView = -1;
     },
     handleNext() {

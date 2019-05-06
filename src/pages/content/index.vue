@@ -38,6 +38,14 @@
       </div>
     </div>
   </div>
+  <div v-else-if="type == 'activity'">
+    <div class="content">
+      <div class="title">{{detail.title}}</div>
+      <div class="main">
+        <wxParse :content="detail.content"/>
+      </div>
+    </div>
+  </div>
   <div v-else>
     <div class="content">
       <div class="title">课程简介</div>

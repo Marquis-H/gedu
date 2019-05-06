@@ -1,20 +1,29 @@
 <template>
   <div class="container">
     <div class="content">
-      <div class="swiper">
+      <div>
         <swiper
+          class="swiper"
           :indicator-dots="banner.indicatorDots"
           :vertical="banner.vertical"
           :autoplay="banner.autoplay"
           :interval="banner.interval"
           :duration="banner.duration"
+          @change="bindchange"
+          :style="'height:'+windowWidth+'px;height:'+windowHeight+'px'"
         >
-          <swiper-item v-for="(item, index) in banner.url" :key="index">
-            <img :src="item" class="slide-image">
+          <swiper-item v-for="(item, index) in banner.url" :key="index" @click="toContent(item.id, 'activity')">
+            <img
+              :src="item.thumb"
+              mode="aspectFit"
+              :data-id="index"
+              @load="imageLoad"
+              class="slide-image"
+            >
           </swiper-item>
         </swiper>
       </div>
-      <div class="tabs">
+      <!-- <div class="tabs">
         <van-tabs @change="onTabChange" color="#6416a6">
           <van-tab v-for="tab in tabs" :title="tab.title" :key="tab.id">
             <van-card
@@ -34,7 +43,7 @@
             </van-card>
           </van-tab>
         </van-tabs>
-      </div>
+      </div>-->
     </div>
   </div>
 </template>
@@ -56,7 +65,13 @@ export default {
         duration: 1000
       },
       tabActive: 0,
-      tabs: []
+      tabs: [],
+      imgsHeight: [],
+      imgsWidth: [],
+      current: 0,
+      imgWidth: 750,
+      windowWidth: 0,
+      windowHeight: 0
     };
   },
   methods: {
@@ -64,39 +79,54 @@ export default {
       wx.navigateTo({
         url: `/pages/content/main?id=${id}&type=${type}`
       });
+    },
+    // 每张图片加载完成会执行 imageload 方法
+    imageLoad(e) {
+      // 获取图片宽高比
+      const ratio = e.mp.detail.width / e.mp.detail.height;
+      const imgHeight = this.windowWidth / ratio;
+      this.imgsHeight[e.mp.target.dataset.id] = imgHeight;
+    },
+    bindchange(e) {
+      this.current = e.mp.detail.current;
     }
   },
   onShow() {
     var that = this;
     var openId = wx.getStorageSync(OPEN_ID);
     // 获取banner
-    callApi(GET_BANNER, "GET", {
-      type: 'home',
-      openId: openId
-    }, res => {
-      this.banner.url = res.data;
-    });
-    var openId = wx.getStorageSync(OPEN_ID);
+    // callApi(GET_BANNER, "GET", {
+    //   type: 'home',
+    //   openId: openId
+    // }, res => {
+    //   this.banner.url = res.data;
+    // });
+    // var openId = wx.getStorageSync(OPEN_ID);
     // 获取内容分类\内容
-    callApi(GET_CONTENT_CAT, "GET", {
-      openId: openId
-    }, res => {
-      this.tabs = res.data;
+    callApi(
+      GET_CONTENT_CAT,
+      "GET",
+      {
+        openId: openId
+      },
+      res => {
+        this.banner.url = res.data[1].contents;
+      }
+    );
+    // 获取设备屏幕宽度
+    wx.getSystemInfo({
+      success: res => {
+        this.windowWidth = res.windowWidth;
+        this.windowHeight = res.windowHeight;
+      }
     });
   }
 };
 </script>
 
 <style scoped>
-.swiper {
+.swiper image {
   width: 100%;
-  margin: 0rpx;
-}
-.swiper swiper {
-  height: 360rpx;
-}
-.slide-image {
   height: 100%;
-  width: 100%;
 }
 </style>

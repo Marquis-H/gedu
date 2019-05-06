@@ -9,7 +9,8 @@
           <van-col span="19">
             <div @click="toProfile">
               <p class="nickname">{{profile.nickname}}</p>
-              <p class="des">查看个人信息
+              <p class="des">
+                查看个人信息
                 <van-icon name="arrow" custom-style="vertical-align:middle;margin-top:-2px;"/>
               </p>
             </div>
@@ -70,8 +71,34 @@
         </van-row>
       </div>
     </div>
+    <div class="campus">
+      <van-card
+        custom-class="tab-content"
+        v-for="(item, idx) in tabs[0].contents"
+        :key="idx"
+        :title="item.title"
+        :thumb="item.thumb"
+      >
+        <view slot="title" @click="toContent(item.id, tabs[0].slug)">
+          <div class="van-multi-ellipsis--l2">{{item.title}}</div>
+        </view>
+        <view slot="desc" @click="toContent(item.id, tabs[0].slug)">
+          <view class="van-multi-ellipsis--l3">{{item.desc}}</view>
+        </view>
+        <view slot="footer">
+          <van-button size="large" type="primary" @click="call(item.phone)">联系电话</van-button>
+        </view>
+      </van-card>
+    </div>
     <van-toast id="van-toast"/>
-    <van-dialog use-slot :closeOnClickOverlay="true" :show="showWordType" @confirm="confirmType()" @close="showWordType = false">
+    <van-action-sheet :show="showPhone" :actions="phone" @select="onSelectPhone"/>
+    <van-dialog
+      use-slot
+      :closeOnClickOverlay="true"
+      :show="showWordType"
+      @confirm="confirmType()"
+      @close="showWordType = false"
+    >
       <van-radio-group :value="wordType" @change="onChange">
         <van-radio name="ielts">雅思</van-radio>
         <van-radio name="toefl">托福</van-radio>
@@ -86,8 +113,13 @@
 
 <script>
 import Toast from "../../../static/vant/toast/toast";
-import { GET_PROFILE, UPDATE_PROFILE } from "../../constants/api.js";
+import {
+  GET_PROFILE,
+  UPDATE_PROFILE,
+  GET_CONTENT_CAT
+} from "../../constants/api.js";
 import { callApi } from "../../libs/api.js";
+import { OPEN_ID } from "../../constants/storage.js";
 
 export default {
   data() {
@@ -102,7 +134,10 @@ export default {
         }
       },
       wordType: "",
-      showWordType: false
+      showWordType: false,
+      tabs: {},
+      showPhone: false,
+      phone: []
     };
   },
   methods: {
@@ -124,6 +159,11 @@ export default {
         url: "/pages/prize/main"
       });
     },
+    toContent(id, type) {
+      wx.navigateTo({
+        url: `/pages/content/main?id=${id}&type=${type}`
+      });
+    },
     onChange(event) {
       this.wordType = event.mp.detail;
     },
@@ -143,6 +183,22 @@ export default {
           Toast(res.message);
         }
       );
+    },
+    call(phone) {
+      var data = [];
+      phone.forEach(element => {
+        data.push({
+          name: element
+        });
+      });
+      this.phone = data;
+      this.showPhone = true;
+    },
+    onSelectPhone(e) {
+      var phone = e.mp.detail.name;
+      wx.makePhoneCall({
+        phoneNumber: phone
+      });
     }
   },
   onShow() {
@@ -151,6 +207,18 @@ export default {
       this.profile = res.data;
       this.wordType = res.data.wordType;
     });
+    var openId = wx.getStorageSync(OPEN_ID);
+    // 获取内容分类\内容
+    callApi(
+      GET_CONTENT_CAT,
+      "GET",
+      {
+        openId: openId
+      },
+      res => {
+        this.tabs = res.data;
+      }
+    );
   },
   created() {}
 };
@@ -198,6 +266,10 @@ export default {
 .service {
   background-color: #ffffff;
   padding: 12px 20px;
+  margin-bottom: 13px;
+}
+.campus {
+  background-color: #ffffff;
 }
 .service .title {
   margin: 0;
@@ -217,5 +289,10 @@ export default {
 }
 .van-radio {
   margin: 8px;
+}
+.van-button--large {
+  margin-top: 10px;
+  height: 36px !important;
+  line-height: 34px !important;
 }
 </style>
