@@ -71,7 +71,7 @@
         </van-row>
       </div>
     </div>
-    <div class="campus">
+    <div class="campus" v-if="tabs[0]">
       <van-card
         custom-class="tab-content"
         v-for="(item, idx) in tabs[0].contents"
@@ -91,7 +91,20 @@
       </van-card>
     </div>
     <van-toast id="van-toast"/>
-    <van-action-sheet :show="showPhone" :actions="phone" @select="onSelectPhone"/>
+    <van-action-sheet @close="onClose" :show="showPhone">
+      <van-cell-group>
+        <van-cell
+          :center="true"
+          icon="phone-o"
+          :title="item.name"
+          :clickable="true"
+          v-for="(item, index) in phone"
+          :key="index"
+          :value="item.campus"
+          @click="onSelectPhone(item.name)"
+        />
+      </van-cell-group>
+    </van-action-sheet>
     <van-dialog
       use-slot
       :closeOnClickOverlay="true"
@@ -186,19 +199,29 @@ export default {
     },
     call(phone) {
       var data = [];
-      phone.forEach(element => {
-        data.push({
-          name: element
-        });
+      phone.forEach((element, i) => {
+        if (phone.length > 1) {
+          data.push({
+            campus: i == 0 ? "北师校区" : "北理UIC校区",
+            name: element
+          });
+        } else {
+          data.push({
+            campus: "",
+            name: element
+          });
+        }
       });
       this.phone = data;
       this.showPhone = true;
     },
-    onSelectPhone(e) {
-      var phone = e.mp.detail.name;
+    onSelectPhone(phone) {
       wx.makePhoneCall({
         phoneNumber: phone
       });
+    },
+    onClose() {
+      this.showPhone = false;
     }
   },
   onShow() {
@@ -294,5 +317,8 @@ export default {
   margin-top: 10px;
   height: 36px !important;
   line-height: 34px !important;
+}
+.van-popup--bottom {
+  width: 100.3% !important;
 }
 </style>

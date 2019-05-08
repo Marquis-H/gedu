@@ -9,7 +9,9 @@
         "van-radio-group": "/static/vant/radio-group/index",
         "van-card": "/static/vant/card/index",
         "van-button": "/static/vant/button/index",
-        "van-action-sheet": "/static/vant/action-sheet/index"
+        "van-action-sheet": "/static/vant/action-sheet/index",
+        "van-cell": "/static/vant/cell/index",
+        "van-cell-group": "/static/vant/cell-group/index"
     },
     "navigationBarTitleText": "我的"
 }
