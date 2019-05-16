@@ -71,7 +71,7 @@ export default {
       isPlaying: false,
       sliderVal: 0,
       duration: 0,
-      currentTime: 0,
+      currentTime: "00:00",
       toView: -1,
       voiceItem: {},
       audioCtx: {}
@@ -79,6 +79,7 @@ export default {
   },
   onLoad: function(options) {
     var id = options.id;
+    this.currentTime = '00:00'
     //获取播放器
     this.audioCtx = wx.createInnerAudioContext("musicAudio");
     // 获取数据
@@ -176,7 +177,7 @@ export default {
     resetData() {
       this.sliderVal = 0;
       this.duration = 0;
-      this.currentTime = 0;
+      this.currentTime = '00:00';
       this.toView = -1;
     },
     handleNext() {

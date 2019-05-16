@@ -24,6 +24,7 @@
 import Toast from "../../../static/vant/toast/toast";
 import { callApi } from "../../libs/api.js";
 import { VOICE_LIST } from "../../constants/api";
+import { SELECT_VOICE } from "../../constants/storage.js";
 
 export default {
   data() {
@@ -44,7 +45,9 @@ export default {
         this.tabs = res.data;
       });
     },
-    onChange(event) {},
+    onChange(event) {
+      wx.setStorageSync(SELECT_VOICE, event.mp.detail.index);
+    },
     download(url, id) {
       // 跳转到播放页面
       wx.navigateTo({
@@ -54,6 +57,11 @@ export default {
   },
   onShow() {
     this.getList();
+    // 获取是否有缓存选择的tab
+    var tab = wx.getStorageSync(SELECT_VOICE);
+    if(tab){
+      this.active = tab;
+    }
   },
   created() {}
 };
