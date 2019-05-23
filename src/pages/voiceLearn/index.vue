@@ -4,12 +4,12 @@
       <van-row>
         <van-col span="14" class="title">{{voiceItem.title}}</van-col>
         <van-col span="10" class="control">
-          <span @click="handleHiddenAll()">
+          <span @click="handleHiddenAll()" v-show="voiceItem.translation.length>0">
             <van-icon name="orders-o"/>
             <span>原文</span>
           </span>
           <span>&emsp;</span>
-          <span @click="handleHiddenCn()">
+          <span @click="handleHiddenCn()" v-show="voiceItem.isCn">
             <van-icon name="orders-o"/>
             <span>翻译</span>
           </span>

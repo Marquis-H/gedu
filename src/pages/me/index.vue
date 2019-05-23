@@ -50,12 +50,12 @@
               <p class="label">积分商城</p>
             </div>
           </van-col>
-          <van-col span="6">
+          <!-- <van-col span="6">
             <div class="item" @click="toFAQ">
               <van-icon name="question-o" size="40px" color="#6416a6"/>
               <p class="label">问题反馈</p>
             </div>
-          </van-col>
+          </van-col>-->
           <van-col span="6">
             <div class="item" @click="toShare">
               <van-icon name="share" size="40px" color="#6416a6"/>
@@ -200,17 +200,10 @@ export default {
     call(phone) {
       var data = [];
       phone.forEach((element, i) => {
-        if (phone.length > 1) {
-          data.push({
-            campus: i == 0 ? "北师校区" : "北理UIC校区",
-            name: element
-          });
-        } else {
-          data.push({
-            campus: "",
-            name: element
-          });
-        }
+        data.push({
+          campus: element.title,
+          name: element.phone
+        });
       });
       this.phone = data;
       this.showPhone = true;
