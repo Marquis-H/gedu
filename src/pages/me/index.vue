@@ -58,14 +58,20 @@
           </van-col>-->
           <van-col span="6">
             <div class="item" @click="toShare">
-              <van-icon name="share" size="40px" color="#6416a6"/>
+              <van-icon name="share" size="40px" color="#6416a6" />
               <p class="label">邀请有奖</p>
             </div>
           </van-col>
           <van-col span="6">
             <div class="item" @click="showWordType = true" v-if="wordType">
-              <van-icon name="notes-o" size="40px" color="#6416a6"/>
+              <van-icon name="notes-o" size="40px" color="#6416a6" />
               <p class="label">单词类别</p>
+            </div>
+          </van-col>
+          <van-col span="6">
+            <div class="item" @click="tips()">
+              <van-icon name="question-o" size="40px" color="#6416a6" />
+              <p class="label">活动规则</p>
             </div>
           </van-col>
         </van-row>
@@ -121,6 +127,7 @@
         <van-radio name="gmat">GMAT</van-radio>
       </van-radio-group>
     </van-dialog>
+    <van-dialog id="van-dialog" />
   </div>
 </template>
 
@@ -129,10 +136,13 @@ import Toast from "../../../static/vant/toast/toast";
 import {
   GET_PROFILE,
   UPDATE_PROFILE,
-  GET_CONTENT_CAT
+  GET_CONTENT_CAT,
+  GET_SHARE_TIPS
 } from "../../constants/api.js";
+
 import { callApi } from "../../libs/api.js";
 import { OPEN_ID } from "../../constants/storage.js";
+import Dialog from "../../../static/vant/dialog/dialog";
 
 export default {
   data() {
@@ -150,7 +160,8 @@ export default {
       showWordType: false,
       tabs: {},
       showPhone: false,
-      phone: []
+      phone: [],
+      shareTips: ''
     };
   },
   methods: {
@@ -215,6 +226,15 @@ export default {
     },
     onClose() {
       this.showPhone = false;
+    },
+    tips() {
+      Dialog.alert({
+        title: "活动规则",
+        message: this.shareTips,
+        messageAlign: "left"
+      }).then(() => {
+        // on close
+      });
     }
   },
   onShow() {
@@ -235,6 +255,14 @@ export default {
         this.tabs = res.data;
       }
     );
+    callApi(
+          GET_SHARE_TIPS,
+          "GET",
+          {},
+          res => {
+            this.shareTips = res.data.tips;
+          }
+        );
   },
   created() {}
 };

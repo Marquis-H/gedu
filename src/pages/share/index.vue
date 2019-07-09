@@ -172,7 +172,7 @@ export default {
 }
 .tips {
   margin: 30px 0;
-  font-size: 12px;
+  font-size: 16px;
 }
 .van-icon {
   vertical-align: middle;
