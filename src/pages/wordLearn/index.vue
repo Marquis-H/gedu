@@ -17,7 +17,7 @@
             </van-col>
             <van-col span="4">
               <div class="voice">
-                <van-icon v-if="isPlay" name="volume" size="20px" color="#6416a6"/>
+                <van-icon v-if="isPlay" name="volume" size="20px" color="#6416a6" />
                 <van-icon
                   v-else
                   name="play"
@@ -54,7 +54,7 @@
           </div>
         </div>
       </div>
-      <van-toast id="van-toast"/>
+      <van-toast id="van-toast" />
     </scroll-view>
     <div class="foot">
       <van-cell-group v-if="step == 1">
@@ -101,13 +101,15 @@
       @opensetting="openSetting"
       confirmButtonText="请打开设定，开启相册存取权限"
     ></van-dialog>
-    <van-toast id="van-toast"/>
+    <van-toast id="van-toast" />
+    <van-dialog id="van-dialog" />
   </div>
 </template>
 
 <script>
 import { callApi } from "../../libs/api.js";
 import Toast from "../../../static/vant/toast/toast";
+import Dialog from "../../../static/vant/dialog/dialog";
 
 import {
   WORD_WORD_INFO,
@@ -207,11 +209,30 @@ export default {
       );
     },
     daka() {
+      var that = this;
       // 打卡
       callApi(WORD_DAKA, "post", {}, res => {
         this.isComplete = res.data.isComplete;
         // 返回背景图、用户昵称和头像,天数
-        this.savePoster(res.data.shareData);
+        wx.getUserInfo({
+          success: function(response) {
+            var nickname = response.userInfo.nickName;
+            var avatar = response.userInfo.avatarUrl;
+            // 打卡
+            that.savePoster({
+              day: res.data.shareData.day,
+              word: res.data.shareData.word,
+              nickname: nickname,
+              avatar: avatar
+            });
+          },
+          fail: function() {
+            Dialog.alert({
+              message: "获取用户信息",
+              confirmButtonOpenType: "getUserInfo"
+            });
+          }
+        });
       });
     },
     // 绘制图片
@@ -224,18 +245,23 @@ export default {
       that.showShare = true;
 
       var canvas = wx.createCanvasContext("shareImg");
-      canvas.drawImage("/static/images/share.jpeg", 0, 0, 350, 420);
+      canvas.drawImage("/static/images/new-share.jpeg", 0, 0, 350, 420);
 
+      canvas.setFontSize(18);
+      canvas.setFillStyle("#fff");
+      canvas.setStrokeStyle("#fff");
+      canvas.fillText(data.nickname, 170, 188);
       canvas.setFontSize(23);
-      canvas.setFillStyle("#424E75");
-      canvas.setStrokeStyle("#424E75");
       if (String(data.day).length == 1) {
-        canvas.fillText(data.day, 203, 190);
+        canvas.fillText(data.day, 130, 238);
       } else {
-        canvas.fillText(data.day, 196, 190);
+        canvas.fillText(data.day, 130, 238);
       }
       canvas.setFontSize(21);
-      canvas.fillText(data.word, 190, 362);
+      canvas.fillText(data.word, 246, 238);
+      canvas.arc(35 / 2 + 127, 35 / 2 + 162, 35 / 2, 0, Math.PI * 2, false);
+      canvas.clip();
+      canvas.drawImage(data.avatar, 127, 162, 35, 35);
       canvas.draw();
 
       setTimeout(function() {
