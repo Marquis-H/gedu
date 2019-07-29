@@ -218,12 +218,18 @@ export default {
           success: function(response) {
             var nickname = response.userInfo.nickName;
             var avatar = response.userInfo.avatarUrl;
-            // 打卡
-            that.savePoster({
-              day: res.data.shareData.day,
-              word: res.data.shareData.word,
-              nickname: nickname,
-              avatar: avatar
+            // 先下载图片
+            wx.getImageInfo({
+              src: avatar,
+              success: function(r) {
+                // 打卡
+                that.savePoster({
+                  day: res.data.shareData.day,
+                  word: res.data.shareData.word,
+                  nickname: nickname,
+                  avatar: r.path
+                });
+              }
             });
           },
           fail: function() {
